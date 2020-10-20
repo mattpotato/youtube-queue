@@ -2,16 +2,16 @@ import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { addToQueue } from "../reducers/queueReducer";
-import { Snippet } from "../types";
+import { Item, Snippet } from "../types";
 
 interface VideoItemProps {
-  itemDetails: Snippet;
+  item: Item;
 }
 
-export const VideoItem: React.FC<VideoItemProps> = ({ itemDetails }) => {
+export const VideoItem: React.FC<VideoItemProps> = ({ item }) => {
   const dispatch = useDispatch();
   const handlePress = () => {
-    dispatch(addToQueue(itemDetails.title));
+    dispatch(addToQueue(item));
   };
 
   return (
@@ -19,16 +19,16 @@ export const VideoItem: React.FC<VideoItemProps> = ({ itemDetails }) => {
       <View style={{ flex: 1, flexDirection: "row" }}>
         <Image
           source={{
-            uri: itemDetails.thumbnails.default.url,
+            uri: item.snippet.thumbnails.default.url,
           }}
           style={{
-            height: itemDetails.thumbnails.default.height,
-            width: itemDetails.thumbnails.default.width,
+            height: item.snippet.thumbnails.default.height,
+            width: item.snippet.thumbnails.default.width,
           }}
         />
         <View style={{ flex: 1 }}>
-          <Text>{itemDetails.title}</Text>
-          <Text>{itemDetails.description}</Text>
+          <Text>{item.snippet.title}</Text>
+          <Text>{item.snippet.description}</Text>
         </View>
       </View>
     </TouchableOpacity>
