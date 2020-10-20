@@ -4,15 +4,11 @@ import {
   NativeSyntheticEvent,
   TextInput,
   TextInputSubmitEditingEventData,
-  View,
-  Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useDispatch, useSelector } from "react-redux";
 import useSWR, { useSWRInfinite, cache } from "swr";
 import { VideoItem } from "../components/VideoItem";
-import { RootState } from "../reducers/rootReducer";
 import { Item, SearchResult } from "../types";
 
 const API_URL =
@@ -112,7 +108,7 @@ const HomeScreen = () => {
 
       <FlatList
         data={items}
-        renderItem={(item) => <VideoItem itemDetails={item.item.snippet} />}
+        renderItem={(item) => <VideoItem item={item.item} />}
         keyExtractor={(_item, index) => String(index)}
         onEndReached={handleEndReached}
       />
