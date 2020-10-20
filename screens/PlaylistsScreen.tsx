@@ -13,7 +13,7 @@ const PlaylistsScreen = () => {
       <FlatList
         data={videos}
         renderItem={(item) => <Text>{item.item}</Text>}
-        keyExtractor={(item, index) => index + item}
+        keyExtractor={(item) => item.id.videoId}
       />
     </SafeAreaView>
   );
