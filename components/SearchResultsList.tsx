@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { FlatList, View, Text } from "react-native";
 import { Item, SearchResult } from "../types";
-import { VideoItem } from "./VideoItem";
+import VideoItem from "./VideoItem";
 
 interface SearchResultsListProps {
   data: SearchResult[];
