@@ -8,7 +8,7 @@ interface VideoItemProps {
   item: Item;
 }
 
-export const VideoItem: React.FC<VideoItemProps> = React.memo(({ item }) => {
+const VideoItem: React.FC<VideoItemProps> = React.memo(({ item }) => {
   const dispatch = useDispatch();
   const handlePress = () => {
     dispatch(addToQueue(item));
@@ -34,3 +34,5 @@ export const VideoItem: React.FC<VideoItemProps> = React.memo(({ item }) => {
     </TouchableOpacity>
   );
 });
+
+export default VideoItem;
