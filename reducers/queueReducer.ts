@@ -5,11 +5,13 @@ import { Item } from "../types";
 interface QueueState {
   videos: Item[];
   currentVideoIndex: number;
+  isPlayingVideo: boolean;
 }
 
 const initialState: QueueState = {
   videos: [],
   currentVideoIndex: 0,
+  isPlayingVideo: false,
 };
 
 const queueSlice = createSlice({
@@ -42,6 +44,9 @@ const queueSlice = createSlice({
     setCurrentVideoIndex: (state, action) => {
       state.currentVideoIndex = action.payload;
     },
+    toggleVideo: (state) => {
+      state.isPlayingVideo = !state.isPlayingVideo;
+    },
   },
 });
 
@@ -51,6 +56,7 @@ export const {
   playNextInQueue,
   playPreviousInQueue,
   setCurrentVideoIndex,
+  toggleVideo,
 } = queueSlice.actions;
 
 export default queueSlice.reducer;
