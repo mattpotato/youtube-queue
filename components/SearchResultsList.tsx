@@ -18,7 +18,7 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
   const itemsData = useMemo(() => {
     let items: Item[] = [];
     data?.forEach((searchResult) =>
-      searchResult?.items.map((item) => items.push(item))
+      searchResult?.items?.map((item) => items.push(item))
     );
     return items;
   }, [data]);
