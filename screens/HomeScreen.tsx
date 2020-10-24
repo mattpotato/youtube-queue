@@ -1,33 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   NativeSyntheticEvent,
+  StyleSheet,
   TextInput,
   TextInputSubmitEditingEventData,
 } from "react-native";
-import { Portal } from "react-native-portalize";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "react-query";
-import { QueueBottomSheet } from "../components/QueueBottomSheet";
 import { SearchResultsList } from "../components/SearchResultsList";
 import { SearchResult } from "../types";
+import { API_TOKEN } from "../config";
 
 const API_URL =
   "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10";
-const API_TOKEN = "AIzaSyCrtUmM_inD-Kh0SV2M-ZVWFLzdbBorx0w";
 
 const HomeScreen = () => {
   const [searchValue, setSearchValue] = useState("");
-  const [shouldFetch, setShouldFetch] = useState(false);
-  const {
-    status,
-    data,
-    error,
-    isFetching,
-    isFetchingMore,
-    fetchMore,
-    canFetchMore,
-    remove,
-  } = useInfiniteQuery<SearchResult>(
+  const { data, fetchMore, remove } = useInfiniteQuery<SearchResult>(
     "search",
     async (key, nextPageToken = "") => {
       console.log("fetching");
@@ -57,7 +46,6 @@ const HomeScreen = () => {
     e: NativeSyntheticEvent<TextInputSubmitEditingEventData>
   ) => {
     remove();
-    setShouldFetch(true);
     setSearchValue(e.nativeEvent.text);
   };
 
@@ -65,21 +53,29 @@ const HomeScreen = () => {
     fetchMore();
   };
 
+  useEffect(() => {
+    console.log(API_TOKEN);
+  }, []);
+
   return (
     <SafeAreaView>
-      <TextInput
-        style={{ height: 40, borderWidth: 1 }}
-        onSubmitEditing={handleSubmit}
-      />
+      <TextInput style={styles.inputField} onSubmitEditing={handleSubmit} />
       <SearchResultsList
         data={data || []}
         handleEndReached={handleEndReached}
       />
-      <Portal>
-        <QueueBottomSheet />
-      </Portal>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  inputField: {
+    borderWidth: 1,
+    borderRadius: 5,
+    height: 40,
+    margin: 8,
+    // padding: 8,
+  },
+});
 
 export default HomeScreen;
