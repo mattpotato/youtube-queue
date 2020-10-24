@@ -121,6 +121,16 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
             style={{
               width: Dimensions.get("screen").width - 40,
             }}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  height: 0.5,
+                  width: "100%",
+                  backgroundColor: "#000",
+                  opacity: 0.2,
+                }}
+              />
+            )}
           />
         </AnimatedView>
       </AnimatedView>
