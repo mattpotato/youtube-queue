@@ -30,7 +30,7 @@ export const QueueVideoItem: React.FC<QueueVideoItemProps> = React.memo(
           />
           <View style={{ flex: 1 }}>
             <Text>{item.snippet.title}</Text>
-            <Text>{item.snippet.description}</Text>
+            <Text>{item.snippet.channelTitle}</Text>
           </View>
         </View>
       </TouchableOpacity>
