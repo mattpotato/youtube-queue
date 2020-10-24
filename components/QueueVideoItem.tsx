@@ -18,18 +18,19 @@ export const QueueVideoItem: React.FC<QueueVideoItemProps> = React.memo(
 
     return (
       <TouchableOpacity onPress={handlePress}>
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        <View style={{ flex: 1, flexDirection: "row", marginVertical: 8 }}>
           <Image
             source={{
               uri: item.snippet.thumbnails.default.url,
             }}
             style={{
-              height: item.snippet.thumbnails.default.height,
-              width: item.snippet.thumbnails.default.width,
+              height: item.snippet.thumbnails.default.height - 50,
+              width: item.snippet.thumbnails.default.width - 50,
+              marginLeft: 8,
             }}
           />
-          <View style={{ flex: 1 }}>
-            <Text>{item.snippet.title}</Text>
+          <View style={{ flex: 1, marginLeft: 8 }}>
+            <Text>{decodeURI(item.snippet.title)}</Text>
             <Text>{item.snippet.channelTitle}</Text>
           </View>
         </View>
