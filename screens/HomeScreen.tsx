@@ -24,7 +24,7 @@ const HomeScreen = () => {
         return null;
       }
       const token = `&key=${API_TOKEN}`;
-      const q = `&q=${searchValue}`;
+      const q = `&q=${encodeURIComponent(searchValue)}`;
       let nextPage = "";
       if (nextPage !== nextPageToken) {
         nextPage = `&pageToken=${nextPageToken}`;
