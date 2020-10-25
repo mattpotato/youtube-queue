@@ -1,16 +1,12 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import { configureStore } from "@reduxjs/toolkit";
 import React from "react";
 import { Provider } from "react-redux";
-import rootReducer from "./reducers/rootReducer";
 import PlaylistsScreen from "./screens/PlaylistsScreen";
 import HomeScreen from "./screens/HomeScreen";
 import PlayerProvider from "./components/PlayerProvider";
-
-const store = configureStore({
-  reducer: rootReducer,
-});
+import { store, persistor } from "./reducers/persistReducer";
+import { PersistGate } from "redux-persist/integration/react";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +20,7 @@ const MyTabs: React.FC<{}> = () => {
             position: "absolute",
             zIndex: 1110,
           },
+          keyboardHidesTabBar: true,
         }}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
@@ -36,9 +33,11 @@ const MyTabs: React.FC<{}> = () => {
 const App = () => {
   return (
     <Provider store={store}>
-      <PlayerProvider>
-        <MyTabs />
-      </PlayerProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <PlayerProvider>
+          <MyTabs />
+        </PlayerProvider>
+      </PersistGate>
     </Provider>
   );
 };
