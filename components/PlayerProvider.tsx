@@ -1,24 +1,31 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { BlurView } from "expo-blur";
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
-import { FlatList } from "react-native-gesture-handler";
-import { useSelector } from "react-redux";
+import {
+  FlatList,
+  TouchableOpacity as TouchableGH,
+} from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reducers/rootReducer";
 import { QueueVideoItem } from "./QueueVideoItem";
 import ContentPlayerButtons from "./ContentPlayerButtons";
 import Player from "./Player";
 import HeaderPlayerButtons from "./HeaderPlayerButtons";
+import { htmlUnescape } from "escape-goat";
+import { saveToPlaylist } from "../reducers/playlistReducer";
+import "react-native-get-random-values";
+import { v4 as uuid } from "uuid";
 
 const AnimatedView = Animated.View;
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 const thumbnailSizes = [50, Dimensions.get("window").width - 60];
 const thumbnailTopPositions = [
@@ -31,7 +38,7 @@ const thumbnailLeftPositions = [
 ];
 const snapPoints = [
   70,
-  thumbnailSizes[1] + thumbnailTopPositions[1] + 15 + 24 + 10 + 30 + 28 + 100,
+  thumbnailSizes[1] + thumbnailTopPositions[1] + 15 + 24 + 10 + 30 + 28,
 ];
 
 interface PlayerProviderProps {
@@ -44,7 +51,37 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   const { videos, currentVideoIndex, isPlayingVideo } = useSelector(
     (state: RootState) => state.queueState
   );
+  const [keyboardShown, setKeyboardShown] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const dispatch = useDispatch();
 
+  const handleKeyboardWillShow = () => {
+    setKeyboardShown(true);
+    onBelowTouch(); //
+  };
+
+  const handleKeyboardDidHide = () => {
+    setKeyboardShown(false);
+  };
+
+  const onSaveToPlaylist = () => {
+    // generate uuid
+    if (videos.length > 0) {
+      dispatch(saveToPlaylist({ name: uuid(), videos: [...videos] }));
+    }
+  };
+
+  useEffect(() => {
+    Keyboard.addListener("keyboardWillShow", handleKeyboardWillShow);
+    Keyboard.addListener("keyboardDidShow", handleKeyboardWillShow);
+    Keyboard.addListener("keyboardDidHide", handleKeyboardDidHide);
+
+    return () => {
+      Keyboard.removeListener("keyboardWillShow", handleKeyboardWillShow);
+      Keyboard.removeListener("keyboardDidShow", handleKeyboardWillShow);
+      Keyboard.removeListener("keyboardDidHide", handleKeyboardDidHide);
+    };
+  }, []);
   const animatedThumbnailTopPosition = Animated.interpolate(fall, {
     inputRange: [0, 1],
     outputRange: thumbnailTopPositions.slice().reverse(),
@@ -63,11 +100,19 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     extrapolate: Animated.Extrapolate.CLAMP,
   });
 
+  const animatedPlayerBottom = Animated.interpolate(fall, {
+    inputRange: [0, 1],
+    outputRange: [0, 70],
+    extrapolate: Animated.Extrapolate.CLAMP,
+  });
+
   const onBelowTouch = () => {
     bottomSheetRef.current!.snapTo(0);
   };
 
   const onHeaderPress = () => {
+    setSheetOpen(true);
+    Keyboard.dismiss();
     bottomSheetRef.current!.snapTo(1);
   };
 
@@ -111,6 +156,9 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
             }}
           >
             <ContentPlayerButtons />
+            <TouchableGH onPress={onSaveToPlaylist}>
+              <Text>Save</Text>
+            </TouchableGH>
           </View>
           <FlatList
             data={videos}
@@ -120,6 +168,8 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
             keyExtractor={(item) => item.id.videoId}
             style={{
               width: Dimensions.get("screen").width - 40,
+              height: 200,
+              flexGrow: 0,
             }}
             ItemSeparatorComponent={() => (
               <View
@@ -180,27 +230,33 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
           >
             {renderHandler()}
           </AnimatedView>
-          <AnimatedBlurView
-            intensity={100}
-            tint="light"
+          <AnimatedView
             style={[
               styles.headerContentContainer,
               {
                 opacity: animatedHeaderContentOpacity,
+                backgroundColor: "#fff",
               },
             ]}
           >
             <View style={styles.headerTopBorder} />
-            <Text style={styles.videoTitleSmall}>
-              {videos[currentVideoIndex]?.snippet.title || "Nothing in queue"}
+            <Text
+              style={[
+                styles.videoTitleSmall,
+                { width: Dimensions.get("screen").width / 2 },
+              ]}
+            >
+              {htmlUnescape(
+                videos[currentVideoIndex]?.snippet.title || "Nothing in queue"
+              )}
             </Text>
             <HeaderPlayerButtons />
-          </AnimatedBlurView>
+          </AnimatedView>
         </AnimatedView>
       </TouchableOpacity>,
       renderSongCover(),
     ];
-  }, [isPlayingVideo]);
+  }, [isPlayingVideo, videos, currentVideoIndex]);
 
   const renderShadow = useCallback(() => {
     const animatedShadowOpacity = Animated.interpolate(fall, {
@@ -210,7 +266,7 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 
     return (
       <AnimatedView
-        pointerEvents="box-none"
+        pointerEvents={sheetOpen ? undefined : "box-none"}
         onTouchEnd={onBelowTouch}
         style={[
           styles.shadowContainer,
@@ -220,25 +276,25 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
         ]}
       />
     );
-  }, []);
+  }, [sheetOpen]);
 
-  const renderFiller = () => {
-    const animatedFillerOpacity = Animated.interpolate(fall, {
-      inputRange: [0, 1],
-      outputRange: [1, 0],
-    });
-    return (
-      <AnimatedView
-        pointerEvents="none"
-        style={[
-          styles.fillerContainer,
-          {
-            opacity: animatedFillerOpacity,
-          },
-        ]}
-      />
-    );
-  };
+  // const renderFiller = () => {
+  //   const animatedFillerOpacity = Animated.interpolate(fall, {
+  //     inputRange: [0, 1],
+  //     outputRange: [1, 0],
+  //   });
+  //   return (
+  //     <AnimatedView
+  //       pointerEvents="none"
+  //       style={[
+  //         styles.fillerContainer,
+  //         {
+  //           opacity: animatedFillerOpacity,
+  //         },
+  //       ]}
+  //     />
+  //   );
+  // };
 
   const renderHandler = () => {
     const animatedBar1Rotation = (outputRange: number[]) =>
@@ -289,24 +345,39 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
   };
 
   return (
-    <View style={[StyleSheet.absoluteFill]}>
-      {children}
-      {renderShadow()}
-      <View
-        pointerEvents="box-none"
-        style={[StyleSheet.absoluteFill, { bottom: 70, zIndex: 0 }]}
-      >
-        <BottomSheet
-          ref={bottomSheetRef}
-          initialSnap={0}
-          callbackNode={fall}
-          snapPoints={snapPoints}
-          renderHeader={renderHeader}
-          renderContent={renderContent}
-        />
+    <TouchableWithoutFeedback
+      onPress={() => {
+        if (keyboardShown) {
+          console.log("yo");
+          onBelowTouch();
+        }
+        Keyboard.dismiss();
+      }}
+    >
+      <View style={[StyleSheet.absoluteFill]}>
+        {children}
+        {renderShadow()}
+        <Animated.View
+          pointerEvents="box-none"
+          style={[
+            StyleSheet.absoluteFill,
+            { bottom: keyboardShown ? 20 : animatedPlayerBottom, zIndex: 0 },
+          ]}
+        >
+          <BottomSheet
+            ref={bottomSheetRef}
+            initialSnap={0}
+            callbackNode={fall}
+            snapPoints={snapPoints}
+            renderHeader={renderHeader}
+            renderContent={renderContent}
+            onOpenStart={() => Keyboard.dismiss()}
+            onOpenEnd={() => setSheetOpen(true)}
+            onCloseEnd={() => setSheetOpen(false)}
+          />
+        </Animated.View>
       </View>
-      {renderFiller()}
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -326,7 +397,8 @@ const styles = StyleSheet.create({
   // Content
   contentContainer: {
     alignItems: "center",
-    height: snapPoints[1] - snapPoints[0],
+    // height: snapPoints[1] - snapPoints[0],
+    height: 1000,
     paddingBottom: 40,
     overflow: "visible",
     ...StyleSheet.absoluteFillObject,
