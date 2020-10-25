@@ -1,8 +1,9 @@
+import { htmlUnescape } from "escape-goat";
 import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
-import { addToQueue, setCurrentVideoIndex } from "../reducers/queueReducer";
-import { Item, Snippet } from "../types";
+import { setCurrentVideoIndex } from "../reducers/queueReducer";
+import { Item } from "../types";
 
 interface QueueVideoItemProps {
   item: Item;
@@ -15,7 +16,6 @@ export const QueueVideoItem: React.FC<QueueVideoItemProps> = React.memo(
     const handlePress = () => {
       dispatch(setCurrentVideoIndex(index));
     };
-
     return (
       <TouchableOpacity onPress={handlePress}>
         <View style={{ flex: 1, flexDirection: "row", marginVertical: 8 }}>
@@ -30,8 +30,8 @@ export const QueueVideoItem: React.FC<QueueVideoItemProps> = React.memo(
             }}
           />
           <View style={{ flex: 1, marginLeft: 8 }}>
-            <Text>{decodeURI(item.snippet.title)}</Text>
-            <Text>{item.snippet.channelTitle}</Text>
+            <Text>{htmlUnescape(item.snippet.title)}</Text>
+            <Text>{htmlUnescape(item.snippet.channelTitle)}</Text>
           </View>
         </View>
       </TouchableOpacity>
