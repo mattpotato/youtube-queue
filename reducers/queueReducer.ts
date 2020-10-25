@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { ViewPagerAndroidBase } from "react-native";
 import { Item } from "../types";
 
 interface QueueState {
