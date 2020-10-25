@@ -1,8 +1,9 @@
+import { htmlUnescape } from "escape-goat";
 import React from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 import { addToQueue } from "../reducers/queueReducer";
-import { Item, Snippet } from "../types";
+import { Item } from "../types";
 
 interface VideoItemProps {
   item: Item;
@@ -28,8 +29,8 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ item }) => {
           }}
         />
         <View style={{ flex: 1, marginLeft: 8 }}>
-          <Text>{item.snippet.title}</Text>
-          <Text>{item.snippet.channelTitle}</Text>
+          <Text>{htmlUnescape(item.snippet.title)}</Text>
+          <Text>{htmlUnescape(item.snippet.channelTitle)}</Text>
         </View>
       </View>
     </TouchableOpacity>
