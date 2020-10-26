@@ -102,7 +102,7 @@ const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
 
   const animatedPlayerBottom = Animated.interpolate(fall, {
     inputRange: [0, 1],
-    outputRange: [0, 70],
+    outputRange: [0, 50],
     extrapolate: Animated.Extrapolate.CLAMP,
   });
 
