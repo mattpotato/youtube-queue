@@ -7,6 +7,7 @@ import HomeScreen from "./screens/HomeScreen";
 import PlayerProvider from "./components/PlayerProvider";
 import { store, persistor } from "./reducers/persistReducer";
 import { PersistGate } from "redux-persist/integration/react";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -16,15 +17,38 @@ const MyTabs: React.FC<{}> = () => {
       <Tab.Navigator
         tabBarOptions={{
           style: {
-            // top: Dimensions.get("screen").height - 40,
             position: "absolute",
             zIndex: 1110,
           },
           keyboardHidesTabBar: true,
         }}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Playlists" component={PlaylistsScreen} />
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <AntDesign
+                name="home"
+                size={24}
+                color={focused ? "blue" : "black"}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Playlists"
+          component={PlaylistsScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <MaterialIcons
+                name="featured-play-list"
+                size={24}
+                color={focused ? "blue" : "black"}
+              />
+            ),
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
