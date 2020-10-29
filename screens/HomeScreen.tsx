@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TextInput,
   TextInputSubmitEditingEventData,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useInfiniteQuery } from "react-query";
@@ -12,7 +13,7 @@ import { SearchResult } from "../types";
 import { API_TOKEN } from "../config";
 
 const API_URL =
-  "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10";
+  "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20";
 
 const HomeScreen = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -53,13 +54,15 @@ const HomeScreen = () => {
     fetchMore();
   };
 
-  useEffect(() => {
-    console.log(API_TOKEN);
-  }, []);
-
   return (
     <SafeAreaView>
-      <TextInput style={styles.inputField} onSubmitEditing={handleSubmit} />
+      <View style={styles.header}>
+        <TextInput
+          style={styles.inputField}
+          onSubmitEditing={handleSubmit}
+          placeholder="Search for videos..."
+        />
+      </View>
       <SearchResultsList
         data={data || []}
         handleEndReached={handleEndReached}
@@ -70,11 +73,13 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   inputField: {
-    borderWidth: 1,
-    borderRadius: 5,
     height: 40,
+    padding: 8,
+  },
+  header: {
+    backgroundColor: "white",
     margin: 8,
-    // padding: 8,
+    borderRadius: 8,
   },
 });
 
