@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FlatList, View, Text } from "react-native";
+import { FlatList, View, Text, Dimensions } from "react-native";
 import { Item, SearchResult } from "../types";
 import VideoItem from "./VideoItem";
 
@@ -38,6 +38,20 @@ export const SearchResultsList: React.FC<SearchResultsListProps> = ({
           }}
         />
       )}
+      ListEmptyComponent={() => (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white",
+            height: Dimensions.get("screen").height - 70,
+          }}
+        >
+          <Text>Search for videos</Text>
+        </View>
+      )}
+      contentContainerStyle={{ flexGrow: 1 }}
     />
   );
 };
