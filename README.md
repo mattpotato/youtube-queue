@@ -1,8 +1,6 @@
 # youtube-queue
 In the Youtube website, you can add videos to a queue. Currently, this feature is unavailable to the Android and iOS Youtube App. This React Native project allows you to search for Youtube videos using the Youtube Data API and add them to a queue. You can then save these videos to your Youtube Playlists.
 
-## Demo
-* put some gifs/images
 ## Setup
 1. ``` yarn```
 
